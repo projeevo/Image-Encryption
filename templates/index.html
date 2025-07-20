@@ -3,90 +3,388 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Selective Image Encryption</title>
+    <title>Advanced Image Encryption - 2D Logistic Map</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="pro-container">
-        <header class="pro-header">
-            <div class="logo-area">
-                <div class="logo-circle">SIE</div>
-                <span class="brand-title">Selective Image Encryption</span>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>ImageCrypt</h1>
+                    <p>Advanced 2D Logistic Map Encryption</p>
+                </div>
             </div>
-            <nav class="pro-nav">
-                <a href="#" class="nav-link active" data-scroll="home">Home</a>
-                <a href="#how-it-works" class="nav-link" data-scroll="how-it-works">How It Works</a>
-                <a href="#about-us" class="nav-link" data-scroll="about-us">About Us</a>
-                <a href="#" class="nav-link">Docs</a>
+            <nav class="nav">
+                <a href="#home" class="nav-link active" data-tab="home">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="#encrypt" class="nav-link" data-tab="encrypt">
+                    <i class="fas fa-lock"></i>
+                    <span>Encrypt</span>
+                </a>
+                <a href="#decrypt" class="nav-link" data-tab="decrypt">
+                    <i class="fas fa-unlock"></i>
+                    <span>Decrypt</span>
+                </a>
+                <a href="#how-it-works" class="nav-link" data-tab="how-it-works">
+                    <i class="fas fa-info-circle"></i>
+                    <span>How It Works</span>
+                </a>
             </nav>
         </header>
-        <section class="hero">
-            <h1>Just Encrypt It.<br><span class="gradient-text">Selective, Secure, Smart.</span></h1>
-            <p class="hero-desc">Upload an image, select a region, and see the magic of chaotic encryption. Built for privacy, designed for you.</p>
-        </section>
-        <main>
-            <div class="controls pro-card">
-                <label for="image-loader" class="custom-file-upload">Upload Image</label>
-                <input type="file" id="image-loader" accept="image/*">
-                <button id="encrypt-btn" disabled>Encrypt ROI</button>
-                <button id="decrypt-btn" disabled>Decrypt ROI</button>
-                <button id="metrics-btn" disabled>Get Metrics</button>
-            </div>
-            <div id="status-area" class="pro-card">
-                <p id="status-message">Please upload an image to begin.</p>
-                <div class="loader" id="loader" style="display: none;"></div>
-            </div>
-            <div class="image-container">
-                <div class="image-box pro-card">
-                    <h2>Original Image <span class="roi-hint">(Draw ROI here)</span></h2>
-                    <canvas id="image-canvas" width="256" height="256"></canvas>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Home Tab -->
+            <div id="home" class="tab-content active">
+                <div class="hero-section">
+                    <div class="hero-content">
+                        <h2>Secure Your Images with Advanced Cryptography</h2>
+                        <p>Experience the power of 2D Logistic Map encryption - a state-of-the-art algorithm that provides military-grade security for your digital images.</p>
+                        <div class="hero-features">
+                            <div class="feature">
+                                <i class="fas fa-bolt"></i>
+                                <span>Lightning Fast</span>
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Military Grade</span>
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-mobile-alt"></i>
+                                <span>Cross Platform</span>
+                            </div>
+                        </div>
+                        <div class="hero-buttons">
+                            <button class="btn btn-primary" onclick="switchTab('encrypt')">
+                                <i class="fas fa-lock"></i>
+                                Start Encrypting
+                            </button>
+                            <button class="btn btn-secondary" onclick="switchTab('how-it-works')">
+                                <i class="fas fa-play"></i>
+                                Learn More
+                            </button>
+                        </div>
+                    </div>
+                    <div class="hero-visual">
+                        <div class="encryption-demo">
+                            <div class="demo-image original">
+                                <i class="fas fa-image"></i>
+                                <span>Original</span>
+                            </div>
+                            <div class="demo-arrow">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                            <div class="demo-image encrypted">
+                                <i class="fas fa-lock"></i>
+                                <span>Encrypted</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="image-box pro-card">
-                    <h2>Processed Image</h2>
-                    <img id="processed-image" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Processed image will appear here.">
+            </div>
+
+            <!-- Encrypt Tab -->
+            <div id="encrypt" class="tab-content">
+                <div class="tab-header">
+                    <h2><i class="fas fa-lock"></i> Image Encryption</h2>
+                    <p>Upload an image to encrypt it using our advanced 2D Logistic Map algorithm</p>
+                </div>
+
+                <div class="encryption-container">
+                    <div class="upload-section">
+                        <div class="upload-area" id="upload-area">
+                            <div class="upload-content">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <h3>Upload Your Image</h3>
+                                <p>Drag and drop your image here or click to browse</p>
+                                <span class="file-types">Supports: JPG, PNG, GIF, BMP</span>
+                            </div>
+                            <input type="file" id="image-input" accept="image/*" hidden>
+                        </div>
+                        <button class="btn btn-primary" id="encrypt-btn" disabled>
+                            <i class="fas fa-lock"></i>
+                            Encrypt Image
+                        </button>
+                    </div>
+
+                    <div class="results-section">
+                        <div class="image-comparison">
+                            <div class="image-card">
+                                <h3>Original Image</h3>
+                                <div class="image-container">
+                                    <img id="original-image" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMmEzMzUwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2I5YjliOSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIGltYWdlIHNlbGVjdGVkPC90ZXh0Pjwvc3ZnPg==" alt="Original image">
+                                </div>
+                            </div>
+                            <div class="image-card">
+                                <h3>Encrypted Image</h3>
+                                <div class="image-container">
+                                    <img id="encrypted-image" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMmEzMzUwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2I5YjliOSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkVuY3J5cHRlZCBpbWFnZSB3aWxsIGFwcGVhciBoZXJlPC90ZXh0Pjwvc3ZnPg==" alt="Encrypted image">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="download-section" id="download-section" style="display: none;">
+                            <div class="download-card">
+                                <h3><i class="fas fa-download"></i> Download Encrypted Package</h3>
+                                <p>Your encrypted image and decryption keys are packaged in a secure ZIP file.</p>
+                                <button class="btn btn-success" id="download-btn">
+                                    <i class="fas fa-file-archive"></i>
+                                    Download ZIP File
+                                </button>
+                                <div class="security-info">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>Keep this file safe - you'll need it to decrypt your image later.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="instructions-section">
+                    <h3><i class="fas fa-graduation-cap"></i> How to Use Encryption</h3>
+                    <div class="instructions-grid">
+                        <div class="instruction-step">
+                            <div class="step-number">1</div>
+                            <h4>Upload Image</h4>
+                            <p>Select any image file (JPG, PNG, GIF, BMP) from your device</p>
+                        </div>
+                        <div class="instruction-step">
+                            <div class="step-number">2</div>
+                            <h4>Encrypt</h4>
+                            <p>Click the "Encrypt Image" button to apply 2D Logistic Map encryption</p>
+                        </div>
+                        <div class="instruction-step">
+                            <div class="step-number">3</div>
+                            <h4>Download</h4>
+                            <p>Download the ZIP file containing your encrypted image and decryption keys</p>
+                        </div>
+                        <div class="instruction-step">
+                            <div class="step-number">4</div>
+                            <h4>Share Securely</h4>
+                            <p>Share the ZIP file with intended recipients for decryption</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="metrics-container pro-card" id="metrics-container" style="display: none;">
-                <h2>Metrics</h2>
-                <p><strong>Entropy:</strong> <span id="entropy-value">-</span></p>
-                <p><strong>PSNR:</strong> <span id="psnr-value">-</span></p>
+
+            <!-- Decrypt Tab -->
+            <div id="decrypt" class="tab-content">
+                <div class="tab-header">
+                    <h2><i class="fas fa-unlock"></i> Image Decryption</h2>
+                    <p>Upload the encrypted ZIP file to restore your original image</p>
+                </div>
+
+                <div class="decryption-container">
+                    <div class="upload-section">
+                        <div class="upload-area" id="decrypt-upload-area">
+                            <div class="upload-content">
+                                <i class="fas fa-file-archive"></i>
+                                <h3>Upload Encrypted Package</h3>
+                                <p>Drag and drop the ZIP file here or click to browse</p>
+                                <span class="file-types">File must be: encrypted_package.zip</span>
+                            </div>
+                            <input type="file" id="zip-input" accept=".zip" hidden>
+                        </div>
+                        <button class="btn btn-primary" id="decrypt-btn" disabled>
+                            <i class="fas fa-unlock"></i>
+                            Decrypt Image
+                        </button>
+                    </div>
+
+                    <div class="results-section">
+                        <div class="image-comparison">
+                            <div class="image-card">
+                                <h3>Encrypted Image</h3>
+                                <div class="image-container">
+                                    <img id="decrypt-encrypted-image" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMmEzMzUwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2I5YjliOSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkVuY3J5cHRlZCBpbWFnZSB3aWxsIGFwcGVhciBoZXJlPC90ZXh0Pjwvc3ZnPg==" alt="Encrypted image">
+                                </div>
+                            </div>
+                            <div class="image-card">
+                                <h3>Decrypted Image</h3>
+                                <div class="image-container">
+                                    <img id="decrypted-image" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMmEzMzUwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2I5YjliOSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkRlY3J5cHRlZCBpbWFnZSB3aWxsIGFwcGVhciBoZXJlPC90ZXh0Pjwvc3ZnPg==" alt="Decrypted image">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="download-section" id="decrypt-download-section" style="display: none;">
+                            <div class="download-card">
+                                <h3><i class="fas fa-download"></i> Download Decrypted Image</h3>
+                                <p>Your original image has been successfully restored.</p>
+                                <button class="btn btn-success" id="decrypt-download-btn">
+                                    <i class="fas fa-image"></i>
+                                    Download Image
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="instructions-section">
+                    <h3><i class="fas fa-graduation-cap"></i> How to Use Decryption</h3>
+                    <div class="instructions-grid">
+                        <div class="instruction-step">
+                            <div class="step-number">1</div>
+                            <h4>Upload ZIP File</h4>
+                            <p>Select the encrypted_package.zip file you received</p>
+                        </div>
+                        <div class="instruction-step">
+                            <div class="step-number">2</div>
+                            <h4>Decrypt</h4>
+                            <p>Click "Decrypt Image" to restore your original image</p>
+                        </div>
+                        <div class="instruction-step">
+                            <div class="step-number">3</div>
+                            <h4>Download</h4>
+                            <p>Download your restored original image</p>
+                        </div>
+                        <div class="instruction-step">
+                            <div class="step-number">4</div>
+                            <h4>Verify</h4>
+                            <p>Compare with the original to ensure perfect restoration</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How It Works Tab -->
+            <div id="how-it-works" class="tab-content">
+                <div class="tab-header">
+                    <h2><i class="fas fa-info-circle"></i> How It Works</h2>
+                    <p>Understanding the 2D Logistic Map encryption algorithm</p>
+                </div>
+
+                <div class="how-it-works-content">
+                    <div class="algorithm-section">
+                        <h3>The 2D Logistic Map Algorithm</h3>
+                        <p>Our encryption system uses a sophisticated 2D Logistic Map, which is a chaotic system that provides excellent security properties for image encryption.</p>
+                        
+                        <div class="algorithm-steps">
+                            <div class="step">
+                                <div class="step-icon">
+                                    <i class="fas fa-random"></i>
+                                </div>
+                                <div class="step-content">
+                                    <h4>1. Chaotic Sequence Generation</h4>
+                                    <p>The 2D Logistic Map generates chaotic sequences using the formula:</p>
+                                    <div class="formula">
+                                        x<sub>n+1</sub> = r₁ × x<sub>n</sub> × (1 - x<sub>n</sub>) + β × y<sub>n</sub>²<br>
+                                        y<sub>n+1</sub> = r₂ × y<sub>n</sub> × (1 - y<sub>n</sub>) + α × x<sub>n</sub>²
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-icon">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </div>
+                                <div class="step-content">
+                                    <h4>2. Pixel Permutation</h4>
+                                    <p>The chaotic x-sequence is used to create a permutation of pixel positions, scrambling the spatial arrangement of the image.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-icon">
+                                    <i class="fas fa-mask"></i>
+                                </div>
+                                <div class="step-content">
+                                    <h4>3. Pixel Diffusion</h4>
+                                    <p>The chaotic y-sequence generates a mask that is XORed with the permuted pixels, providing additional security through value diffusion.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-icon">
+                                    <i class="fas fa-layer-group"></i>
+                                </div>
+                                <div class="step-content">
+                                    <h4>4. RGB Channel Processing</h4>
+                                    <p>Each RGB channel is processed independently, ensuring complete encryption of all color information.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="security-features">
+                        <h3>Security Features</h3>
+                        <div class="features-grid">
+                            <div class="feature-card">
+                                <i class="fas fa-shield-alt"></i>
+                                <h4>High Entropy</h4>
+                                <p>Chaotic maps ensure maximum randomness in encrypted output</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-key"></i>
+                                <h4>Key Sensitivity</h4>
+                                <p>Tiny changes in parameters produce completely different results</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-eye-slash"></i>
+                                <h4>Visual Security</h4>
+                                <p>Encrypted images appear as random noise to human eyes</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-undo"></i>
+                                <h4>Perfect Recovery</h4>
+                                <p>Original image is restored exactly without any loss</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="technical-details">
+                        <h3>Technical Details</h3>
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <strong>Algorithm:</strong> 2D Logistic Map with XOR diffusion
+                            </div>
+                            <div class="detail-item">
+                                <strong>Key Parameters:</strong> x₀, y₀, r₁, r₂, α, β
+                            </div>
+                            <div class="detail-item">
+                                <strong>Security Level:</strong> Military-grade encryption
+                            </div>
+                            <div class="detail-item">
+                                <strong>File Format:</strong> PNG with embedded keys
+                            </div>
+                            <div class="detail-item">
+                                <strong>Processing:</strong> Real-time encryption/decryption
+                            </div>
+                            <div class="detail-item">
+                                <strong>Compatibility:</strong> All modern browsers
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
-        <section id="how-it-works" class="pro-card scroll-section">
-            <h2>How It Works</h2>
-            <ol>
-                <li><strong>Upload:</strong> Choose an image to upload.</li>
-                <li><strong>Select ROI:</strong> Draw a region of interest (ROI) on the image.</li>
-                <li><strong>Encrypt:</strong> Click 'Encrypt ROI' to apply chaotic encryption to the selected region.</li>
-                <li><strong>Decrypt:</strong> Use 'Decrypt ROI' to restore the original region.</li>
-                <li><strong>Metrics:</strong> View security metrics like Entropy and PSNR.</li>
-            </ol>
-        </section>
-        <section id="about-us" class="pro-card scroll-section">
-            <h2>About Us</h2>
-            <p>This project demonstrates selective image encryption using advanced chaotic maps. Built by passionate developers, it aims to showcase modern cryptography and interactive web design for privacy-focused applications.</p>
-        </section>
-        <footer class="pro-footer">
-            <p>&copy; 2024 Selective Image Encryption. Built with ❤️ by Projeevoooo.</p>
-        </footer>
+
+        <!-- Status Messages -->
+        <div id="status-message" class="status-message" style="display: none;">
+            <div class="status-content">
+                <i class="status-icon"></i>
+                <span class="status-text"></span>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loading-overlay" class="loading-overlay" style="display: none;">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <p>Processing your image...</p>
+            </div>
+        </div>
     </div>
+
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script>
-        // Smooth scroll for nav links
-        const navLinks = document.querySelectorAll('.nav-link[data-scroll]');
-        navLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                const targetId = this.getAttribute('href');
-                if (targetId.startsWith('#')) {
-                    e.preventDefault();
-                    const section = document.querySelector(targetId);
-                    if (section) {
-                        section.scrollIntoView({ behavior: 'smooth' });
-                    }
-                }
-            });
-        });
-    </script>
 </body>
 </html>
