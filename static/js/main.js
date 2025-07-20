@@ -30,6 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const decryptDownloadSection = document.getElementById('decrypt-download-section');
     const decryptDownloadBtn = document.getElementById('decrypt-download-btn');
 
+
+    // Patient name input
+    const patientNameInput = document.getElementById('patient-name');
+
     // Webcam Capture Elements
     const webcamBtn = document.getElementById('webcam-btn');
     const webcamContainer = document.getElementById('webcam-container');
@@ -38,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeWebcamBtn = document.getElementById('close-webcam-btn');
     const webcamCanvas = document.getElementById('webcam-canvas');
     let webcamStream = null;
+
 
     // Debug: Check if elements are found
     console.log('Decryption elements found:', {
@@ -66,24 +71,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function switchTab(tabName) {
-        // Update navigation
+        if (tabName.startsWith('#')) tabName = tabName.slice(1);
+        const navLinks = document.querySelectorAll('.nav-link');
         navLinks.forEach(link => {
             link.classList.remove('active');
             if (link.dataset.tab === tabName) {
                 link.classList.add('active');
             }
         });
-
-        // Update content
+        const tabContents = document.querySelectorAll('.tab-content');
         tabContents.forEach(content => {
             content.classList.remove('active');
             if (content.id === tabName) {
                 content.classList.add('active');
             }
         });
-
-        currentTab = tabName;
     }
+    window.switchTab = switchTab;
 
     function downloadFile(data, filename, type = 'application/octet-stream') {
         const blob = new Blob([data], { type });
@@ -150,7 +154,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 for (let i = 0; i < zipData.length; i++) {
                     zipArray[i] = zipData.charCodeAt(i);
                 }
-                downloadFile(zipArray, 'encrypted_package.zip');
+                const patientName = patientNameInput.value.trim() || 'encrypted';
+                const filename = `${patientName}_encrypted_package.zip`;
+                downloadFile(zipArray, filename);
             }
         });
     }
@@ -176,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showStatus('Please upload an image first.', 'error');
             return;
         }
-
+        const patientName = patientNameInput.value.trim() || 'encrypted';
         showLoading(true);
         try {
             const response = await fetch('/encrypt', {
@@ -185,12 +191,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    image: uploadedImage
+                    image: uploadedImage,
+                    patient_name: patientName
                 })
             });
-
             const result = await response.json();
-
             if (result.status === 'success') {
                 encryptedData = result;
                 encryptedImage.src = result.encrypted_image;

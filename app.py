@@ -127,6 +127,7 @@ def handle_encrypt():
     try:
         data = request.get_json()
         img_b64 = data.get('image')
+        patient_name = data.get('patient_name', 'encrypted')
         if not img_b64:
             return jsonify({'status': 'error', 'message': 'No image provided'}), 400
 
@@ -175,6 +176,7 @@ def handle_encrypt():
             'status': 'success', 
             'encrypted_image': encrypted_b64,
             'zip_file': zip_b64,
+            'zip_filename': f'{patient_name}_encrypted_package.zip',
             'message': 'Image encrypted successfully! Download the zip file for decryption.'
         })
 
