@@ -11,7 +11,7 @@ let roi = null;
 let startX, startY, endX, endY, isDrawing = false;
 let uploadedImageData = null;
 
-// Handle image upload and preview
+// Handle image upload and preview, and upload to backend immediately
 imageInput.addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -23,6 +23,8 @@ imageInput.addEventListener('change', function(e) {
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             image = img;
             uploadedImageData = canvas.toDataURL('image/png');
+            // Upload image to backend immediately
+            uploadImage();
         };
         img.src = evt.target.result;
     };
@@ -69,7 +71,7 @@ canvas.addEventListener('mouseup', function(e) {
     ctx.strokeRect(roi.x, roi.y, roi.w, roi.h);
 });
 
-// Upload image to server
+// Upload image to server immediately after selection
 function uploadImage(callback) {
     if (!uploadedImageData) return;
     fetch('/upload', {
@@ -80,7 +82,7 @@ function uploadImage(callback) {
     .then(res => res.json())
     .then(data => {
         if (data.status === 'success') {
-            callback && callback();
+            if (callback) callback();
         }
     });
 }
@@ -90,19 +92,17 @@ encryptBtn.addEventListener('click', function() {
         alert('Please upload an image and select an ROI.');
         return;
     }
-    uploadImage(() => {
-        fetch('/encrypt', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ roi: roi })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.status === 'success' && data.encrypted_image) {
-                showOutputImage(data.encrypted_image, 'Encrypted ROI');
-                fetchMetrics();
-            }
-        });
+    fetch('/encrypt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roi: roi })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success' && data.encrypted_image) {
+            showOutputImage(data.encrypted_image, 'Encrypted ROI');
+            fetchMetrics();
+        }
     });
 });
 
