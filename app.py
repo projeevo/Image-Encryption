@@ -13,7 +13,7 @@ import chaotic_map
 import encryption as enc
 import decryption as dec
 import metrics as met
-
+#learn
 app = Flask(__name__, static_folder='static', template_folder='templates')
 app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'uploads')
 app.secret_key = 'supersecretkey'  # Needed for session
