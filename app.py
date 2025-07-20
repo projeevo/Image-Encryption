@@ -15,23 +15,40 @@ import decryption as dec
 import metrics as met
 #learn
 app = Flask(__name__, static_folder='static', template_folder='templates')
-app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'uploads')
 app.secret_key = 'supersecretkey'  # Needed for session
-
-# Ensure upload folder exists
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
+ 
 # Helper to convert OpenCV image to base64
 def cv2_to_base64(img):
     _, buffer = cv2.imencode('.png', img)
     return 'data:image/png;base64,' + base64.b64encode(buffer).decode('utf-8')
 
 # Helper to convert base64 to OpenCV image
-def base64_to_cv2(data):
-    header, encoded = data.split(',', 1)
-    img_bytes = base64.b64decode(encoded)
-    img = Image.open(BytesIO(img_bytes)).convert('RGB')
-    return cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
+def base64_to_cv2(b64_string):
+    """
+    Decodes a base64 string (either raw or a data URL) into an OpenCV image.
+    """
+    try:
+        # If it's a data URL, strip the header
+        if 'data:image' in b64_string and ',' in b64_string:
+            header, b64_string = b64_string.split(',', 1)
+
+        img_bytes = base64.b64decode(b64_string)
+        img_array = np.frombuffer(img_bytes, np.uint8)
+        # Decode as a color image, which can then be converted to grayscale
+        img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+        if img is None:
+            raise ValueError("cv2.imdecode returned None")
+        return img
+    except (ValueError, TypeError, base64.binascii.Error) as e:
+        app.logger.error(f"Failed to decode base64 string: {e}")
+        return None
+
+# Helper to get an image from session
+def get_image_from_session(session_key):
+    if session_key not in session or not session[session_key]:
+        return None
+    img_bytes = base64.b64decode(session[session_key])
+    return cv2.imdecode(np.frombuffer(img_bytes, np.uint8), cv2.IMREAD_GRAYSCALE)
 
 @app.route('/')
 def index():
@@ -43,7 +60,11 @@ def upload():
     img_b64 = data.get('image')
     if not img_b64:
         return jsonify({'status': 'error', 'message': 'No image provided'}), 400
+
     img = base64_to_cv2(img_b64)
+    if img is None:
+        return jsonify({'status': 'error', 'message': 'Invalid or corrupt image data'}), 400
+
     img = preprocessing.resize_image(img)
     img = preprocessing.to_grayscale(img)
     # Save to session (as bytes)
@@ -54,14 +75,19 @@ def upload():
     return jsonify({'status': 'success', 'message': 'Image uploaded'})
 
 @app.route('/encrypt', methods=['POST'])
-def encrypt():
+def handle_encrypt():
     data = request.get_json()
     roi = data.get('roi')
-    if not roi or 'image' not in session:
+    img = get_image_from_session('image')
+    if not roi or img is None:
         return jsonify({'status': 'error', 'message': 'No ROI or image'}), 400
-    img_bytes = base64.b64decode(session['image'])
-    img = cv2.imdecode(np.frombuffer(img_bytes, np.uint8), cv2.IMREAD_GRAYSCALE)
-    x, y, w, h = roi['x'], roi['y'], roi['w'], roi['h']
+    try:
+        x = int(roi['x'])
+        y = int(roi['y'])
+        w = int(roi['w'])
+        h = int(roi['h'])
+    except (ValueError, TypeError, KeyError):
+        return jsonify({'status': 'error', 'message': 'Invalid ROI coordinates'}), 400
     roi_img = roi_selector.extract_roi(img, x, y, w, h)
     flat = zigzag.zigzag_scan(roi_img)
     key = chaotic_map.logistic_sine_map(flat.size)
@@ -77,14 +103,20 @@ def encrypt():
     return jsonify({'status': 'success', 'encrypted_image': cv2_to_base64(encrypted_img)})
 
 @app.route('/decrypt', methods=['POST'])
-def decrypt():
-    if 'encrypted' not in session or 'roi' not in session or 'key' not in session or 'image' not in session:
+def handle_decrypt():
+    encrypted_img = get_image_from_session('encrypted')
+    roi = session.get('roi')
+    key_list = session.get('key')
+    if encrypted_img is None or not roi or not key_list:
         return jsonify({'status': 'error', 'message': 'No encrypted image or key'}), 400
-    img_bytes = base64.b64decode(session['encrypted'])
-    encrypted_img = cv2.imdecode(np.frombuffer(img_bytes, np.uint8), cv2.IMREAD_GRAYSCALE)
-    roi = session['roi']
-    key = np.array(session['key'], dtype=np.uint8)
-    x, y, w, h = roi['x'], roi['y'], roi['w'], roi['h']
+    key = np.array(key_list, dtype=np.uint8)
+    try:
+        x = int(roi['x'])
+        y = int(roi['y'])
+        w = int(roi['w'])
+        h = int(roi['h'])
+    except (ValueError, TypeError, KeyError):
+        return jsonify({'status': 'error', 'message': 'Invalid ROI coordinates from session'}), 400
     encrypted_roi = roi_selector.extract_roi(encrypted_img, x, y, w, h)
     flat = zigzag.zigzag_scan(encrypted_roi)
     decrypted_flat = dec.decrypt(flat, key)
@@ -97,15 +129,12 @@ def decrypt():
     return jsonify({'status': 'success', 'decrypted_image': cv2_to_base64(decrypted_img)})
 
 @app.route('/metrics', methods=['POST'])
-def metrics():
-    if 'image' not in session or 'encrypted' not in session or 'decrypted' not in session:
+def handle_metrics():
+    orig = get_image_from_session('image')
+    enc_img = get_image_from_session('encrypted')
+    dec_img = get_image_from_session('decrypted')
+    if orig is None or enc_img is None or dec_img is None:
         return jsonify({'entropy': 0, 'psnr': 0})
-    orig_bytes = base64.b64decode(session['image'])
-    enc_bytes = base64.b64decode(session['encrypted'])
-    dec_bytes = base64.b64decode(session['decrypted'])
-    orig = cv2.imdecode(np.frombuffer(orig_bytes, np.uint8), cv2.IMREAD_GRAYSCALE)
-    enc_img = cv2.imdecode(np.frombuffer(enc_bytes, np.uint8), cv2.IMREAD_GRAYSCALE)
-    dec_img = cv2.imdecode(np.frombuffer(dec_bytes, np.uint8), cv2.IMREAD_GRAYSCALE)
     entropy_val = float(met.entropy(enc_img))
     psnr_val = float(met.psnr(orig, dec_img))
     return jsonify({'entropy': round(entropy_val, 4), 'psnr': round(psnr_val, 4)})

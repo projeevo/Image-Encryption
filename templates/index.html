@@ -3,47 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Region-Based Medical Image Encryption</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <title>Selective Image Encryption</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-title">Region-Based Medical Image Encryption</div>
-        <div class="nav-links">
-            <a href="#home">Home</a>
-            <a href="#upload">Upload</a>
-            <a href="#results">Results</a>
-        </div>
-    </nav>
-    <main class="main-content">
-        <section id="home" class="section home-section">
-            <h1>Region-Based Medical Image Encryption</h1>
-            <p class="description">
-                Securely encrypt and decrypt regions of medical images using advanced Zigzag Transform and 2D Logistic Sine Map. Select a region of interest (ROI), encrypt it, and evaluate the results with entropy, histogram, and PSNR metrics.
-            </p>
-        </section>
-        <section id="upload" class="section upload-section">
-            <h2>1. Upload Medical Image</h2>
-            <input type="file" id="imageInput" accept="image/png, image/jpeg">
-        </section>
-        <section id="preview" class="section preview-section">
-            <h2>2. Preview & Select Region</h2>
-            <div class="canvas-wrapper">
-                <canvas id="imageCanvas" width="256" height="256"></canvas>
-            </div>
+    <div class="container">
+        <header>
+            <h1>Selective Image Encryption</h1>
+            <p>Upload an image, select a region, and see the magic of chaotic encryption.</p>
+        </header>
+
+        <main>
             <div class="controls">
-                <button id="encryptBtn">Encrypt ROI</button>
-                <button id="decryptBtn">Decrypt ROI</button>
-                <button id="downloadBtn">Download Image</button>
+                <label for="image-loader" class="custom-file-upload">Upload Image</label>
+                <input type="file" id="image-loader" accept="image/*">
+                <button id="encrypt-btn" disabled>Encrypt ROI</button>
+                <button id="decrypt-btn" disabled>Decrypt ROI</button>
+                <button id="metrics-btn" disabled>Get Metrics</button>
             </div>
-        </section>
-        <section id="results" class="section results-section">
-            <h2>3. Results & Metrics</h2>
-            <div id="metrics"></div>
-            <div id="histogram"></div>
-            <div id="outputImages"></div>
-        </section>
-    </main>
-    <script src="/static/script.js"></script>
+
+            <div id="status-area">
+                <p id="status-message">Please upload an image to begin.</p>
+                <div class="loader" id="loader" style="display: none;"></div>
+            </div>
+
+            <div class="image-container">
+                <div class="image-box">
+                    <h2>Original Image (Draw ROI here)</h2>
+                    <canvas id="image-canvas" width="256" height="256"></canvas>
+                </div>
+                <div class="image-box">
+                    <h2>Processed Image</h2>
+                    <img id="processed-image" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Processed image will appear here.">
+                </div>
+            </div>
+
+            <div class="metrics-container" id="metrics-container" style="display: none;">
+                <h2>Metrics</h2>
+                <p><strong>Entropy:</strong> <span id="entropy-value">-</span></p>
+                <p><strong>PSNR:</strong> <span id="psnr-value">-</span></p>
+            </div>
+        </main>
+
+        <footer><p>A demonstration of selective image encryption using chaotic maps.</p></footer>
+    </div>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
-</html> 
+</html>
