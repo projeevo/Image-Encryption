@@ -30,6 +30,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const decryptDownloadSection = document.getElementById('decrypt-download-section');
     const decryptDownloadBtn = document.getElementById('decrypt-download-btn');
 
+    // Webcam Capture Elements
+    const webcamBtn = document.getElementById('webcam-btn');
+    const webcamContainer = document.getElementById('webcam-container');
+    const webcamVideo = document.getElementById('webcam-video');
+    const captureBtn = document.getElementById('capture-btn');
+    const closeWebcamBtn = document.getElementById('close-webcam-btn');
+    const webcamCanvas = document.getElementById('webcam-canvas');
+    let webcamStream = null;
+
     // Debug: Check if elements are found
     console.log('Decryption elements found:', {
         decryptUploadArea: !!decryptUploadArea,
@@ -332,6 +341,45 @@ document.addEventListener('DOMContentLoaded', () => {
             showLoading(false);
         }
     }
+
+    // Webcam Capture Logic
+    webcamBtn.addEventListener('click', async () => {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            try {
+                webcamStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                webcamVideo.srcObject = webcamStream;
+                webcamContainer.style.display = 'block';
+                webcamBtn.style.display = 'none';
+            } catch (err) {
+                showStatus('Unable to access webcam: ' + err.message, 'error');
+            }
+        } else {
+            showStatus('Webcam not supported in this browser.', 'error');
+        }
+    });
+
+    closeWebcamBtn.addEventListener('click', () => {
+        if (webcamStream) {
+            webcamStream.getTracks().forEach(track => track.stop());
+        }
+        webcamContainer.style.display = 'none';
+        webcamBtn.style.display = 'inline-block';
+    });
+
+    captureBtn.addEventListener('click', () => {
+        webcamCanvas.getContext('2d').drawImage(webcamVideo, 0, 0, webcamCanvas.width, webcamCanvas.height);
+        const dataUrl = webcamCanvas.toDataURL('image/png');
+        uploadedImage = dataUrl;
+        originalImage.src = dataUrl;
+        encryptBtn.disabled = false;
+        showStatus('Image captured from webcam! Click "Encrypt Image" to proceed.', 'success');
+        // Hide webcam after capture
+        if (webcamStream) {
+            webcamStream.getTracks().forEach(track => track.stop());
+        }
+        webcamContainer.style.display = 'none';
+        webcamBtn.style.display = 'inline-block';
+    });
 
     // Initialize tabs
     function initTabs() {
