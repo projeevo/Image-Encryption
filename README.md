@@ -200,13 +200,7 @@ Image-Encryption/
 - **Browser**: Use the latest version of your browser
 - **System resources**: Close other applications for better performance
 
-## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit pull requests or open issues for bugs and feature requests.
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
 
 ## 🙏 Acknowledgments
 
